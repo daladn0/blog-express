@@ -19,6 +19,7 @@ export default class ApiError extends Error {
   /**
    * 400 Bad Request
    * @param {string} message - Error message
+   * @param {Array} errors - Errors array
    * @returns ApiError instance with 400 bad request error
    */
   static BadRequest(message, errors) {
