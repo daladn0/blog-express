@@ -56,6 +56,13 @@ class UserService {
       tokens,
     };
   }
+
+  async logout(refreshToken) {
+    await UserModel.updateOne(
+      { refreshToken },
+      { $unset: { refreshToken: 1 } },
+    );
+  }
 }
 
 export default new UserService();

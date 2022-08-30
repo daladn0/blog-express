@@ -30,7 +30,7 @@ router.post(
   }),
   UserController.login,
 );
-router.get("/refresh", UserController.refresh);
 router.get("/logout", UserController.logout);
+router.get("/refresh", UserController.refresh);
 
 export default router;
