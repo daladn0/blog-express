@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { v4 } from "uuid";
 import config from "../config.js";
 import { MESSAGE, ROLES, JWT_TYPES } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
@@ -6,90 +7,100 @@ import UserModel from "../models/User.model.js";
 import RoleModel from "../models/Role.model.js";
 import { generateTokens, validateToken } from "../helpers/JWT.js";
 import { UserJWTDTO, UserModelDTO } from "../dtos/User.dto.js";
+import MailService from "./Mail.service.js";
 
 class UserService {
-  async registration(fullName, email, password) {
-    const candidate = await UserModel.findOne({ email });
+	async registration(fullName, email, password) {
+		const candidate = await UserModel.findOne({ email });
 
-    if (candidate) {
-      throw ApiError.BadRequest(MESSAGE.USER_ALREADY_EXISTS);
-    }
+		if (candidate) {
+			throw ApiError.BadRequest(MESSAGE.USER_ALREADY_EXISTS);
+		}
 
-    const userRole = await RoleModel.findOne({ value: ROLES.USER });
+		const userRole = await RoleModel.findOne({ value: ROLES.ADMIN });
 
-    const hashedPassword = bcrypt.hashSync(password, parseInt(config.SALT));
+		const hashedPassword = bcrypt.hashSync(password, parseInt(config.SALT));
 
-    const createdUser = await UserModel.create({
-      fullName,
-      email,
-      password: hashedPassword,
-      role: userRole.value,
-    });
+		const activationLink = v4();
 
-    const userModelDto = new UserModelDTO(createdUser);
+		const createdUser = await UserModel.create({
+			fullName,
+			email,
+			password: hashedPassword,
+			role: userRole.value,
+			activationLink,
+		});
 
-    return userModelDto;
-  }
+		await MailService.sendActivationMail(email, activationLink);
 
-  async login(email, password) {
-    const foundUser = await UserModel.findOne({ email });
+		const userModelDto = new UserModelDTO(createdUser);
 
-    if (!foundUser) throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
+		return userModelDto;
+	}
 
-    const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
+	async login(email, password) {
+		const foundUser = await UserModel.findOne({ email });
 
-    if (!isPasswordCorrect)
-      throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
+		if (!foundUser) throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
 
-    const userJwtDto = new UserJWTDTO(foundUser);
+		const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
 
-    const tokens = generateTokens({ ...userJwtDto });
+		if (!isPasswordCorrect)
+			throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
 
-    foundUser.refreshToken = tokens.refreshToken;
+		const userJwtDto = new UserJWTDTO(foundUser);
 
-    await foundUser.save();
+		const tokens = generateTokens({ ...userJwtDto });
 
-    const userModelDto = new UserModelDTO(foundUser);
+		foundUser.refreshToken = tokens.refreshToken;
 
-    return {
-      user: userModelDto,
-      tokens,
-    };
-  }
+		await foundUser.save();
 
-  async logout(refreshToken) {
-    await UserModel.updateOne(
-      { refreshToken },
-      { $unset: { refreshToken: 1 } },
-    );
-  }
+		const userModelDto = new UserModelDTO(foundUser);
 
-  async refresh(refreshToken) {
-    if (!refreshToken) throw ApiError.Unauthorized();
+		return {
+			user: userModelDto,
+			tokens,
+		};
+	}
 
-    const decodedData = validateToken(refreshToken, JWT_TYPES.REFRESH);
+	async logout(refreshToken) {
+		await UserModel.updateOne(
+			{ refreshToken },
+			{ $unset: { refreshToken: 1 } }
+		);
+	}
 
-    if (!decodedData) throw ApiError.Unauthorized();
+	async refresh(refreshToken) {
+		if (!refreshToken) throw ApiError.Unauthorized();
 
-    const user = await UserModel.findById(decodedData.id);
+		const decodedData = validateToken(refreshToken, JWT_TYPES.REFRESH);
 
-    if (!user) throw ApiError.Unauthorized();
+		if (!decodedData) throw ApiError.Unauthorized();
 
-    const userJwtDto = new UserJWTDTO(user);
+		const user = await UserModel.findById(decodedData.id);
 
-    const tokens = generateTokens({ ...userJwtDto });
+		if (!user) throw ApiError.Unauthorized();
 
-    user.refreshToken = tokens.refreshToken;
+		const userJwtDto = new UserJWTDTO(user);
 
-    await user.save();
+		const tokens = generateTokens({ ...userJwtDto });
 
-    const userModelDto = new UserModelDTO(user);
+		user.refreshToken = tokens.refreshToken;
 
-    return {
-      user: userModelDto,
-      tokens,
-    };
-  }
+		await user.save();
+
+		const userModelDto = new UserModelDTO(user);
+
+		return {
+			user: userModelDto,
+			tokens,
+		};
+	}
+
+	async activate(activationLink) {
+		await UserModel.findOneAndUpdate({ activationLink }, { isActivated: true });
+	}
 }
 
 export default new UserService();
