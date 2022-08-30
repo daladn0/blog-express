@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import config from "../config.js";
-import { MESSAGE, ROLES } from "../constants/index.js";
+import { MESSAGE, ROLES, JWT_TYPES } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
 import UserModel from "../models/User.model.js";
 import RoleModel from "../models/Role.model.js";
-import { generateTokens } from "../helpers/JWT.js";
+import { generateTokens, validateToken } from "../helpers/JWT.js";
 import { UserJWTDTO, UserModelDTO } from "../dtos/User.dto.js";
 
 class UserService {
@@ -62,6 +62,33 @@ class UserService {
       { refreshToken },
       { $unset: { refreshToken: 1 } },
     );
+  }
+
+  async refresh(refreshToken) {
+    if (!refreshToken) throw ApiError.Unauthorized();
+
+    const decodedData = validateToken(refreshToken, JWT_TYPES.REFRESH);
+
+    if (!decodedData) throw ApiError.Unauthorized();
+
+    const user = await UserModel.findById(decodedData.id);
+
+    if (!user) throw ApiError.Unauthorized();
+
+    const userJwtDto = new UserJWTDTO(user);
+
+    const tokens = generateTokens({ ...userJwtDto });
+
+    user.refreshToken = tokens.refreshToken;
+
+    await user.save();
+
+    const userModelDto = new UserModelDTO(user);
+
+    return {
+      user: userModelDto,
+      tokens,
+    };
   }
 }
 

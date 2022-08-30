@@ -1,3 +1,8 @@
+export const JWT_TYPES = {
+  ACCESS: "ACCESS",
+  REFRESH: "REFRESH",
+};
+
 export const ROLES = {
   USER: "USER",
   ADMIN: "ADMIN",
