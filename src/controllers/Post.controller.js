@@ -41,8 +41,19 @@ class PostController {
 		}
 	}
 
-	async updatePost() {
+	async updatePost(req, res, next) {
 		try {
+			const errors = validationResult(req);
+
+			if (!errors.isEmpty()) {
+				throw ApiError.BadRequest(MESSAGE.INVALID_PARAMETERS, errors.array());
+			}
+
+			const { id } = req.params;
+
+			const updatedPost = await PostService.updatePost(id, req.body);
+
+			res.send(updatedPost);
 		} catch (err) {
 			next(err);
 		}

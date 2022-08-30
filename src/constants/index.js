@@ -30,6 +30,9 @@ export const VARIABLES = {
 };
 
 export const VALIDATION_MESSAGE = {
+	ID_NOT_PROVIDED: `Id is not provided`,
+	ID_INVALID: `Invalid id provided`,
+
 	FULLNAME_LENGTH: `Full name should have from ${VARIABLES.FULLNAME_MIN_LENGTH} up to ${VARIABLES.FULLNAME_MAX_LENGTH} chars`,
 	INVALID_EMAIL: `Invalid email`,
 
@@ -40,6 +43,7 @@ export const VALIDATION_MESSAGE = {
 
 	POST_TITLE_LENGTH: `Post title should have from ${VARIABLES.POST_TITLE_MIN_LENGTH} up to ${VARIABLES.POST_TITLE_MAX_LENGTH} chars`,
 	POST_BODY_LENGTH: `Post body should have from ${VARIABLES.POST_BODY_MIN_LENGTH} up to ${VARIABLES.POST_BODY_MAX_LENGTH} chars`,
+	POST_NOT_FOUND: `Post not found`,
 
 	CATEGORY_TITLE_LENGTH: `Category title should have from ${VARIABLES.CATEGORY_TITLE_MIN_LENGTH} up to ${VARIABLES.CATEGORY_TITLE_MAX_LENGTH} chars`,
 	CATEGORY_NOT_ARRAY: `Categories should be an array of valid id's`,
