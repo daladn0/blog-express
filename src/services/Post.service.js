@@ -1,4 +1,4 @@
-import { VALIDATION_MESSAGE } from "../constants/index.js";
+import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
 import PostModel from "../models/Post.model.js";
 
@@ -19,7 +19,7 @@ class PostService {
 		});
 		const populatedPost = await post.populate(
 			"author categories",
-			"fullName email avatar -_id title image"
+			"fullName email avatar title image"
 		);
 		return populatedPost;
 	}
@@ -27,7 +27,7 @@ class PostService {
 	async updatePost(id, { title, body, categories }) {
 		const foundPost = await PostModel.findById(id);
 
-		if (!foundPost) throw ApiError.NotFound(VALIDATION_MESSAGE.POST_NOT_FOUND);
+		if (!foundPost) throw ApiError.NotFound(MESSAGE.POST_NOT_FOUND);
 
 		if (title) foundPost.title = title;
 
@@ -40,7 +40,24 @@ class PostService {
 
 		const populatedPost = await foundPost.populate(
 			"author categories",
-			"fullname email avatar title image -_id"
+			"fullName email avatar title image"
+		);
+
+		return populatedPost;
+	}
+
+	async deletePost(id) {
+		await PostModel.findByIdAndDelete(id);
+	}
+
+	async getOne(id) {
+		const foundPost = await PostModel.findById(id);
+
+		if (!foundPost) throw ApiError.NotFound(MESSAGE.POST_NOT_FOUND);
+
+		const populatedPost = await foundPost.populate(
+			"author categories",
+			"email avatar fullName title"
 		);
 
 		return populatedPost;

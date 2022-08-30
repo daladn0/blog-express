@@ -7,7 +7,15 @@ import AuthMiddleware from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.get("/", PostController.getAll);
-router.get("/:id", PostController.getOne);
+router.get(
+	"/:id",
+	param("id")
+		.exists()
+		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)
+		.isMongoId()
+		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
+	PostController.getOne
+);
 router.post(
 	"/",
 	AuthMiddleware,
@@ -99,6 +107,14 @@ router.put(
 	}),
 	PostController.updatePost
 );
-router.delete("/:id", PostController.deletePost);
+router.delete(
+	"/:id",
+	param("id")
+		.exists()
+		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)
+		.isMongoId()
+		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
+	PostController.deletePost
+);
 
 export default router;

@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { MESSAGE } from "../constants/index.js";
+import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
 import PostService from "../services/Post.service.js";
 
@@ -34,8 +34,19 @@ class PostController {
 		}
 	}
 
-	async getOne() {
+	async getOne(req, res, next) {
 		try {
+			const errors = validationResult(req);
+
+			if (!errors.isEmpty()) {
+				throw ApiError.BadRequest(MESSAGE.INVALID_PARAMETERS, errors.array());
+			}
+
+			const { id } = req.params;
+
+			const post = await PostService.getOne(id);
+
+			res.send(post);
 		} catch (err) {
 			next(err);
 		}
@@ -59,8 +70,22 @@ class PostController {
 		}
 	}
 
-	async deletePost() {
+	async deletePost(req, res, next) {
 		try {
+			const errors = validationResult(req);
+
+			if (!errors.isEmpty()) {
+				throw ApiError.BadRequest(
+					VALIDATION_MESSAGE.INVALID_PARAMETERS,
+					errors.array()
+				);
+			}
+
+			const { id } = req.params;
+
+			await PostService.deletePost(id);
+
+			res.sendStatus(204);
 		} catch (err) {
 			next(err);
 		}
