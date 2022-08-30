@@ -20,7 +20,16 @@ router.post(
   }),
   UserController.registration,
 );
-router.post("/login", UserController.login);
+router.post(
+  "/login",
+  body("email", VALIDATION_MESSAGE.EMAIL_NOT_PROVIDED).exists({
+    checkFalsy: true,
+  }),
+  body("password", VALIDATION_MESSAGE.PASSWORD_NOT_PROVIDED).exists({
+    checkFalsy: true,
+  }),
+  UserController.login,
+);
 router.get("/refresh", UserController.refresh);
 router.get("/logout", UserController.logout);
 

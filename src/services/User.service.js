@@ -4,6 +4,8 @@ import { MESSAGE, ROLES } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
 import UserModel from "../models/User.model.js";
 import RoleModel from "../models/Role.model.js";
+import { generateTokens } from "../helpers/JWT.js";
+import { UserJWTDTO, UserModelDTO } from "../dtos/User.dto.js";
 
 class UserService {
   async registration(fullName, email, password) {
@@ -24,11 +26,34 @@ class UserService {
       role: userRole.value,
     });
 
+    const userModelDto = new UserModelDTO(createdUser);
+
+    return userModelDto;
+  }
+
+  async login(email, password) {
+    const foundUser = await UserModel.findOne({ email });
+
+    if (!foundUser) throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
+
+    const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
+
+    if (!isPasswordCorrect)
+      throw ApiError.BadRequest(MESSAGE.INVALID_CREDENTIALS);
+
+    const userJwtDto = new UserJWTDTO(foundUser);
+
+    const tokens = generateTokens({ ...userJwtDto });
+
+    foundUser.refreshToken = tokens.refreshToken;
+
+    await foundUser.save();
+
+    const userModelDto = new UserModelDTO(foundUser);
+
     return {
-      fullName: createdUser.fullName,
-      email: createdUser.email,
-      avatar: createdUser.avatar,
-      isActivated: createdUser.isActivated,
+      user: userModelDto,
+      tokens,
     };
   }
 }
