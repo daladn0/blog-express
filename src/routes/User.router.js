@@ -10,13 +10,13 @@ router.post(
 		.exists()
 		.trim()
 		.isLength({
-			min: VARIABLES.FULLNAME_MIN_WIDTH,
-			max: VARIABLES.FULLNAME_MAX_WIDTH,
+			min: VARIABLES.FULLNAME_MIN_LENGTH,
+			max: VARIABLES.FULLNAME_MAX_LENGTH,
 		}),
 	body("email", VALIDATION_MESSAGE.INVALID_EMAIL).isEmail().normalizeEmail(),
 	body("password", VALIDATION_MESSAGE.PASSWORD_LENGTH).trim().isLength({
-		min: VARIABLES.PASSWORD_MIN_WIDTH,
-		max: VARIABLES.PASSWORD_MAX_WIDTH,
+		min: VARIABLES.PASSWORD_MIN_LENGTH,
+		max: VARIABLES.PASSWORD_MAX_LENGTH,
 	}),
 	UserController.registration
 );
