@@ -92,6 +92,42 @@ class UserController {
 			next(err);
 		}
 	}
+
+	async savePost(req, res, next) {
+		try {
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
+
+			const { id: postId } = req.params;
+
+			await UserService.savePost(postId, req.user.id);
+
+			res.sendStatus(204);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	async unsavePost(req, res, next) {
+		try {
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
+
+			const { id: postId } = req.params;
+
+			await UserService.unsavePost(postId, req.user.id);
+
+			res.sendStatus(204);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default new UserController();

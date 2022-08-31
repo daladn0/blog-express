@@ -10,6 +10,14 @@ import { UserJWTDTO, UserModelDTO } from "../dtos/User.dto.js";
 import MailService from "./Mail.service.js";
 
 class UserService {
+	async getUserById(id) {
+		const foundUser = await UserModel.findById(id);
+
+		if (!foundUser) throw ApiError.NotFound(MESSAGE.USER_DOESNT_EXIST);
+
+		return foundUser;
+	}
+
 	async registration(fullName, email, password) {
 		const candidate = await UserModel.findOne({ email });
 
@@ -100,6 +108,42 @@ class UserService {
 
 	async activate(activationLink) {
 		await UserModel.findOneAndUpdate({ activationLink }, { isActivated: true });
+	}
+
+	async addCreatedPost(userId, postId) {
+		const user = await this.getUserById(userId);
+
+		user.createdPosts.push(postId);
+
+		await user.save();
+	}
+
+	async removeCreatedPost(userId, postId) {
+		const user = await this.getUserById(userId);
+
+		user.createdPosts = user.createdPosts.filter(
+			(post) => post.toString() !== postId
+		);
+
+		await user.save();
+	}
+
+	async savePost(postId, userId) {
+		const user = await this.getUserById(userId);
+
+		user.savedPosts.push(postId);
+
+		await user.save();
+	}
+
+	async unsavePost(postId, userId) {
+		const user = await this.getUserById(userId);
+
+		user.savedPosts = user.savedPosts.filter(
+			(post) => post.toString() !== postId
+		);
+
+		await user.save();
 	}
 }
 

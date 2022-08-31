@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
-import { VALIDATION_MESSAGE, VARIABLES } from "../constants/index.js";
+import { VALIDATION_MESSAGE, VARIABLES, ROLES } from "../constants/index.js";
 import {
 	validateCategories,
 	validateBody,
@@ -8,6 +8,7 @@ import {
 } from "../helpers/ValidateRequest.js";
 import PostController from "../controllers/Post.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
+import RoleMiddleware from "../middlewares/role.middleware.js";
 const router = Router();
 
 router.get(
@@ -39,6 +40,8 @@ router.post(
 );
 router.put(
 	"/:id",
+	AuthMiddleware,
+	RoleMiddleware([ROLES.USER, ROLES.ADMIN]),
 	param("id")
 		.exists()
 		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)
@@ -55,6 +58,8 @@ router.put(
 );
 router.delete(
 	"/:id",
+	AuthMiddleware,
+	RoleMiddleware([ROLES.USER, ROLES.ADMIN]),
 	param("id")
 		.exists()
 		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)

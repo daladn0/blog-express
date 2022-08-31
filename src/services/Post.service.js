@@ -1,5 +1,6 @@
-import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
+import { MESSAGE } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
+import UserService from "./User.service.js";
 import PostModel from "../models/Post.model.js";
 
 class PostService {
@@ -21,6 +22,7 @@ class PostService {
 			"author categories",
 			"fullName email avatar title image"
 		);
+		await UserService.addCreatedPost(userId, post._id);
 		return populatedPost;
 	}
 
@@ -46,8 +48,9 @@ class PostService {
 		return populatedPost;
 	}
 
-	async deletePost(id) {
-		await PostModel.findByIdAndDelete(id);
+	async deletePost(postId, userId) {
+		await PostModel.findByIdAndDelete(postId);
+		await UserService.removeCreatedPost(userId, postId);
 	}
 
 	async getOne(id) {

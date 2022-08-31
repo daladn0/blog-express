@@ -12,11 +12,12 @@ const schema = new mongoose.Schema(
 		},
 		role: [{ type: String, ref: "Role" }],
 		refreshToken: { type: String },
+		createdPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		isActivated: { type: Boolean, default: false },
 		activationLink: { type: String },
 	},
-	{ timeseries: true }
+	{ timestamps: true }
 );
 
 export default mongoose.model("User", schema);
