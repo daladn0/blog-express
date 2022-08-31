@@ -57,10 +57,42 @@ class PostService {
 
 		const populatedPost = await foundPost.populate(
 			"author categories",
-			"email avatar fullName title"
+			"email avatar fullName title image"
 		);
 
 		return populatedPost;
+	}
+
+	async getAll(limit, page, sortOrder, categories) {
+		const offset = (page - 1) * limit;
+
+		let posts;
+		let totalCount;
+
+		if (categories && categories.length) {
+			posts = await PostModel.find({ categories: { $in: categories } })
+				.sort({ createdAt: sortOrder })
+				.skip(offset)
+				.limit(limit)
+				.populate("author categories", "fullName email avatar title image");
+
+			totalCount = await PostModel.countDocuments({
+				categories: { $in: categories },
+			});
+		} else {
+			posts = await PostModel.find({})
+				.sort({ createdAt: sortOrder })
+				.skip(offset)
+				.limit(limit)
+				.populate("author categories", "fullName email avatar title image");
+
+			totalCount = await PostModel.countDocuments();
+		}
+
+		return {
+			items: posts,
+			totalCount,
+		};
 	}
 }
 

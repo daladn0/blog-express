@@ -1,16 +1,49 @@
-import { validationResult } from "express-validator";
-import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
-import ApiError from "../helpers/ApiError.js";
+import { MESSAGE } from "../constants/index.js";
 import PostService from "../services/Post.service.js";
+import { validateResults } from "../helpers/ValidateRequest.js";
 
 class PostController {
+	async getOne(req, res, next) {
+		try {
+			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+
+			const { id } = req.params;
+
+			const post = await PostService.getOne(id);
+
+			res.send(post);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	async getAll(req, res, next) {
+		try {
+			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+
+			let { limit, page, sortOrder } = req.query;
+
+			const { categories } = req.body;
+
+			limit = limit || 10;
+			page = page || 1;
+			sortOrder = parseInt(sortOrder) === 1 ? 1 : -1;
+
+			const posts = await PostService.getAll(
+				limit,
+				page,
+				sortOrder,
+				categories
+			);
+			res.send(posts);
+		} catch (err) {
+			next(err);
+		}
+	}
+
 	async createPost(req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest(MESSAGE.INVALID_PARAMETERS, errors.array());
-			}
+			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
 
 			const { title, body } = req.body;
 
@@ -27,38 +60,9 @@ class PostController {
 		}
 	}
 
-	async getAll() {
-		try {
-		} catch (err) {
-			next(err);
-		}
-	}
-
-	async getOne(req, res, next) {
-		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest(MESSAGE.INVALID_PARAMETERS, errors.array());
-			}
-
-			const { id } = req.params;
-
-			const post = await PostService.getOne(id);
-
-			res.send(post);
-		} catch (err) {
-			next(err);
-		}
-	}
-
 	async updatePost(req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest(MESSAGE.INVALID_PARAMETERS, errors.array());
-			}
+			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
 
 			const { id } = req.params;
 
@@ -72,14 +76,7 @@ class PostController {
 
 	async deletePost(req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest(
-					VALIDATION_MESSAGE.INVALID_PARAMETERS,
-					errors.array()
-				);
-			}
+			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
 
 			const { id } = req.params;
 
