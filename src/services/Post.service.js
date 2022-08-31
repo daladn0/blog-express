@@ -1,4 +1,4 @@
-import { MESSAGE } from "../constants/index.js";
+import { MESSAGE, ROLES } from "../constants/index.js";
 import ApiError from "../helpers/ApiError.js";
 import UserService from "./User.service.js";
 import PostModel from "../models/Post.model.js";
@@ -48,9 +48,19 @@ class PostService {
 		return populatedPost;
 	}
 
-	async deletePost(postId, userId) {
-		await PostModel.findByIdAndDelete(postId);
-		await UserService.removeCreatedPost(userId, postId);
+	async deletePost(postId, user) {
+		const foundPost = await PostModel.findById(postId);
+
+		if (!foundPost) return null;
+
+		// user that is trying to remove post is not its author
+		if (foundPost.author.toString() !== user.id) {
+			// administrators are allowed to remove other user's posts
+			if (!user.role.includes(ROLES.ADMIN)) throw ApiError.Forbidden();
+		}
+
+		await PostModel.findByIdAndDelete(foundPost._id);
+		await UserService.removeCreatedPost(foundPost.author, foundPost._id);
 	}
 
 	async getOne(id) {

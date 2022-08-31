@@ -101,7 +101,7 @@ class PostController {
 
 			const { id } = req.params;
 
-			await PostService.deletePost(id, req.user.id);
+			await PostService.deletePost(id, req.user);
 
 			res.sendStatus(204);
 		} catch (err) {

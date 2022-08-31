@@ -122,7 +122,7 @@ class UserService {
 		const user = await this.getUserById(userId);
 
 		user.createdPosts = user.createdPosts.filter(
-			(post) => post.toString() !== postId
+			(post) => post.toString() !== postId.toString()
 		);
 
 		await user.save();
