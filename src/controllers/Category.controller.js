@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
 import CategoryService from "../services/Category.service.js";
-import ApiError from "../helpers/ApiError.js";
+import { API_ERRORS_METHODS } from "../helpers/ApiError.js";
 import { validateResults } from "../helpers/ValidateRequest.js";
 
 class CategoryController {
@@ -17,7 +17,11 @@ class CategoryController {
 
 	async createCategory(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { title } = req.body;
 
@@ -31,7 +35,11 @@ class CategoryController {
 
 	async updateCategory(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { id } = req.params;
 			const { title } = req.body;
@@ -46,7 +54,11 @@ class CategoryController {
 
 	async deleteCategory(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { id } = req.params;
 

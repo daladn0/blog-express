@@ -1,11 +1,16 @@
 import { MESSAGE } from "../constants/index.js";
 import PostService from "../services/Post.service.js";
+import { API_ERRORS_METHODS } from "../helpers/ApiError.js";
 import { validateResults } from "../helpers/ValidateRequest.js";
 
 class PostController {
 	async getOne(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { id } = req.params;
 
@@ -19,7 +24,11 @@ class PostController {
 
 	async getAll(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			let { limit, page, sortOrder } = req.query;
 
@@ -43,7 +52,11 @@ class PostController {
 
 	async createPost(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { title, body } = req.body;
 
@@ -62,7 +75,11 @@ class PostController {
 
 	async updatePost(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { id } = req.params;
 
@@ -76,7 +93,11 @@ class PostController {
 
 	async deletePost(req, res, next) {
 		try {
-			validateResults(req, MESSAGE.INVALID_PARAMETERS, "BadRequest");
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { id } = req.params;
 

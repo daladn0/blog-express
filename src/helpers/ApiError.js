@@ -60,3 +60,11 @@ export default class ApiError extends Error {
 		return new ApiError(message, 404);
 	}
 }
+
+export const API_ERRORS_METHODS = {
+	BadRequest: "BadRequest",
+	Unauthorized: "Unauthorized",
+	Forbidden: "Forbidden",
+	Internal: "Internal",
+	NotFound: "NotFound",
+};

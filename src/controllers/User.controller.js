@@ -1,16 +1,16 @@
-import { validationResult } from "express-validator";
 import UserService from "../services/User.service.js";
-import ApiError from "../helpers/ApiError.js";
-import { VARIABLES } from "../constants/index.js";
+import { MESSAGE, VARIABLES } from "../constants/index.js";
+import { API_ERRORS_METHODS } from "../helpers/ApiError.js";
+import { validateResults } from "../helpers/ValidateRequest.js";
 
 class UserController {
 	async registration(req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest("Invalid credentials", errors.array());
-			}
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { fullName, email, password } = req.body;
 
@@ -28,11 +28,11 @@ class UserController {
 
 	async login(req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				throw ApiError.BadRequest("Invalid credentials", errors.array());
-			}
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
 
 			const { email, password } = req.body;
 
@@ -81,12 +81,16 @@ class UserController {
 	}
 
 	async activate(req, res, next) {
-		const activationLink = req.params.link;
+		try {
+			const activationLink = req.params.link;
 
-		await UserService.activate(activationLink);
+			await UserService.activate(activationLink);
 
-		// FIXME: replace with redirection to the client when it's up
-		res.redirect("https://google.com");
+			// FIXME: replace with redirection to the client when it's up
+			res.redirect("https://google.com");
+		} catch (err) {
+			next(err);
+		}
 	}
 }
 
