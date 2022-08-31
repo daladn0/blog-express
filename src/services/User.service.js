@@ -17,7 +17,7 @@ class UserService {
 			throw ApiError.BadRequest(MESSAGE.USER_ALREADY_EXISTS);
 		}
 
-		const userRole = await RoleModel.findOne({ value: ROLES.ADMIN });
+		const userRole = await RoleModel.findOne({ value: ROLES.USER });
 
 		const hashedPassword = bcrypt.hashSync(password, parseInt(config.SALT));
 

@@ -4,6 +4,10 @@ import { validateToken } from "../helpers/JWT.js";
 
 export default function (req, res, next) {
 	try {
+		if (req.method === "OPTIONS") {
+			next();
+		}
+
 		const authorization = req.headers.authorization;
 
 		if (!authorization) throw ApiError.Unauthorized();
