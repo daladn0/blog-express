@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { VALIDATION_MESSAGE, VARIABLES } from "../constants/index.js";
 import CategoryController from "../controllers/Category.controller.js";
 const router = Router();
 
-router.get("/", CategoryController.getCategories);
+router.get("/", CategoryController.getAll);
 router.post(
 	"/",
 	body("title", VALIDATION_MESSAGE.CATEGORY_TITLE_LENGTH)
@@ -16,7 +16,30 @@ router.post(
 		}),
 	CategoryController.createCategory
 );
-router.put("/:id", CategoryController.updateCategory);
-router.delete("/:id", CategoryController.deleteCategory);
+router.put(
+	"/:id",
+	param("id")
+		.exists()
+		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)
+		.isMongoId()
+		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
+	body("title", VALIDATION_MESSAGE.CATEGORY_TITLE_LENGTH)
+		.exists()
+		.trim()
+		.isLength({
+			min: VARIABLES.CATEGORY_TITLE_MIN_LENGTH,
+			max: VARIABLES.CATEGORY_TITLE_MAX_LENGTH,
+		}),
+	CategoryController.updateCategory
+);
+router.delete(
+	"/:id",
+	param("id")
+		.exists()
+		.withMessage(VALIDATION_MESSAGE.ID_NOT_PROVIDED)
+		.isMongoId()
+		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
+	CategoryController.deleteCategory
+);
 
 export default router;

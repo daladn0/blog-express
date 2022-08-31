@@ -57,5 +57,7 @@ export const MESSAGE = {
 	INVALID_PARAMETERS: "Invalid parameters",
 
 	CATEGORY_ALREADY_EXISTS: "Category with given title already exists",
+	CATEGORY_NOT_FOUND: "Category not found",
+
 	POST_NOT_FOUND: `Post not found`,
 };
