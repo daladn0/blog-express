@@ -81,9 +81,13 @@ class PostController {
 				API_ERRORS_METHODS.BadRequest
 			);
 
-			const { id } = req.params;
+			const { id: postId } = req.params;
 
-			const updatedPost = await PostService.updatePost(id, req.body);
+			const updatedPost = await PostService.updatePost(
+				req.user,
+				postId,
+				req.body
+			);
 
 			res.send(updatedPost);
 		} catch (err) {

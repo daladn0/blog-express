@@ -4,6 +4,17 @@ import UserService from "./User.service.js";
 import PostModel from "../models/Post.model.js";
 
 class PostService {
+	verifyUser(post, user) {
+		// user that is trying to remove post is not its author
+		if (post.author.toString() !== user.id) {
+			// administrators are allowed to remove other user's posts
+			if (!user.role.includes(ROLES.ADMIN)) throw ApiError.Forbidden();
+			console.log("----------------------------");
+			console.log("done with admins permissions");
+			console.log("----------------------------");
+		}
+	}
+
 	async createPost(title, body, categories, userId) {
 		let postCategories = [];
 
@@ -26,10 +37,12 @@ class PostService {
 		return populatedPost;
 	}
 
-	async updatePost(id, { title, body, categories }) {
-		const foundPost = await PostModel.findById(id);
+	async updatePost(user, postId, { title, body, categories }) {
+		const foundPost = await PostModel.findById(postId);
 
 		if (!foundPost) throw ApiError.NotFound(MESSAGE.POST_NOT_FOUND);
+
+		this.verifyUser(foundPost, user);
 
 		if (title) foundPost.title = title;
 
@@ -53,11 +66,7 @@ class PostService {
 
 		if (!foundPost) return null;
 
-		// user that is trying to remove post is not its author
-		if (foundPost.author.toString() !== user.id) {
-			// administrators are allowed to remove other user's posts
-			if (!user.role.includes(ROLES.ADMIN)) throw ApiError.Forbidden();
-		}
+		this.verifyUser(foundPost, user);
 
 		await PostModel.findByIdAndDelete(foundPost._id);
 		await UserService.removeCreatedPost(foundPost.author, foundPost._id);
