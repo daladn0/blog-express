@@ -9,6 +9,8 @@ import {
 import PostController from "../controllers/Post.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
 import RoleMiddleware from "../middlewares/role.middleware.js";
+import EmailMiddleware from "../middlewares/email.middleware.js";
+
 const router = Router();
 
 router.get(
@@ -28,6 +30,7 @@ router.get(
 router.post(
 	"/",
 	AuthMiddleware,
+	EmailMiddleware,
 	body("title", VALIDATION_MESSAGE.POST_TITLE_LENGTH).exists().trim().isLength({
 		min: VARIABLES.POST_TITLE_MIN_LENGTH,
 		max: VARIABLES.POST_TITLE_MAX_LENGTH,
@@ -41,6 +44,7 @@ router.post(
 router.put(
 	"/:id",
 	AuthMiddleware,
+	EmailMiddleware,
 	RoleMiddleware([ROLES.USER, ROLES.ADMIN]),
 	param("id")
 		.exists()
@@ -59,6 +63,7 @@ router.put(
 router.delete(
 	"/:id",
 	AuthMiddleware,
+	EmailMiddleware,
 	RoleMiddleware([ROLES.USER, ROLES.ADMIN]),
 	param("id")
 		.exists()

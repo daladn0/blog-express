@@ -1,6 +1,7 @@
 export class UserJWTDTO {
 	id;
 	role;
+	isActivated;
 
 	/**
 	 * UserDto

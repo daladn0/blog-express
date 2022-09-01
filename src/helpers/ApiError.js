@@ -36,10 +36,11 @@ export default class ApiError extends Error {
 
 	/**
 	 * 403 Forbidden
+	 * @param {string} message - Error message
 	 * @returns ApiError instance with 403 Forbidden error
 	 */
-	static Forbidden() {
-		return new ApiError("Forbidden", 403);
+	static Forbidden(message = "Forbidden") {
+		return new ApiError(message, 403);
 	}
 
 	/**

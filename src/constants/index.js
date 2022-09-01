@@ -50,6 +50,10 @@ export const VALIDATION_MESSAGE = {
 };
 
 export const MESSAGE = {
+	EMAIL_NOT_ACTIVATED: "Your account is not activated",
+	EMAIL_ACTIVATION_SENT: "Check your email to activate your profile",
+	EMAIL_ACTIVATED: "Your email is now activated",
+
 	USER_ALREADY_EXISTS: "User with given email already exists",
 	USER_DOESNT_EXIST: "User with given email doesn't exist",
 

@@ -1,5 +1,4 @@
-import { validationResult } from "express-validator";
-import { MESSAGE, VALIDATION_MESSAGE } from "../constants/index.js";
+import { MESSAGE } from "../constants/index.js";
 import CategoryService from "../services/Category.service.js";
 import { API_ERRORS_METHODS } from "../helpers/ApiError.js";
 import { validateResults } from "../helpers/ValidateRequest.js";

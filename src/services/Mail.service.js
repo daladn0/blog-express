@@ -13,6 +13,12 @@ class MailService {
 			},
 		});
 	}
+
+	/**
+	 *
+	 * @param {string} to user email
+	 * @param {string} activationHash user action link hash
+	 */
 	async sendActivationMail(to, activationHash) {
 		await this.transporter.sendMail({
 			from: config.SMTP_USER,
