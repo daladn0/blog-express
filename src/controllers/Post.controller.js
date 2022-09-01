@@ -34,8 +34,8 @@ class PostController {
 
 			const { categories } = req.body;
 
-			limit = limit || 10;
-			page = page || 1;
+			limit = parseInt(limit) || 10;
+			page = parseInt(page) || 1;
 			sortOrder = parseInt(sortOrder) === 1 ? 1 : -1;
 
 			const posts = await PostService.getAll(

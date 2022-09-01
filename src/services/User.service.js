@@ -145,6 +145,29 @@ class UserService {
 
 		await user.save();
 	}
+
+	async getUserPosts(type, userId, limit, page, orderBy) {
+		const offset = (page - 1) * limit;
+
+		const user = await this.getUserById(userId);
+
+		const totalCount = user[type].length;
+
+		const posts = await user.populate({
+			path: type,
+			options: {
+				limit: limit,
+				skip: offset,
+				sort: { createdAt: orderBy },
+			},
+			populate: { path: "categories" },
+		});
+
+		return {
+			items: posts[type],
+			totalCount,
+		};
+	}
 }
 
 export default new UserService();

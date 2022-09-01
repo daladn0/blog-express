@@ -32,6 +32,10 @@ router.post(
 	}),
 	UserController.login
 );
+router.get("/logout", UserController.logout);
+router.get("/refresh", UserController.refresh);
+router.get("/activate/:link", UserController.activate);
+
 router.post(
 	"/save-post/:id",
 	authMiddleware,
@@ -42,6 +46,7 @@ router.post(
 		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
 	UserController.savePost
 );
+
 router.post(
 	"/unsave-post/:id",
 	authMiddleware,
@@ -52,8 +57,9 @@ router.post(
 		.withMessage(VALIDATION_MESSAGE.ID_INVALID),
 	UserController.unsavePost
 );
-router.get("/logout", UserController.logout);
-router.get("/refresh", UserController.refresh);
-router.get("/activate/:link", UserController.activate);
+
+router.get("/saved-posts", authMiddleware, UserController.getSavedPosts);
+
+router.get("/created-posts", authMiddleware, UserController.getCreatedPosts);
 
 export default router;

@@ -128,6 +128,68 @@ class UserController {
 			next(err);
 		}
 	}
+
+	/**
+	 * Get user's post by type
+	 * @param {string} type posts type e.g: savedPosts | createdPosts
+	 * @param {Object} req http request object
+	 * @returns user's posts
+	 */
+	async getUserPosts(type, req) {
+		let { limit, page, sortOrder } = req.query;
+
+		limit = parseInt(limit) || 10;
+		page = parseInt(page) || 1;
+		sortOrder = parseInt(sortOrder) === 1 ? 1 : -1;
+
+		const posts = await UserService.getUserPosts(
+			type,
+			req.user.id,
+			limit,
+			page,
+			sortOrder
+		);
+
+		return posts;
+	}
+
+	async getSavedPosts(req, res, next) {
+		try {
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
+
+			const savedPosts = await new UserController().getUserPosts(
+				"savedPosts",
+				req
+			);
+
+			res.send(savedPosts);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	async getCreatedPosts(req, res, next) {
+		try {
+			validateResults(
+				req,
+				MESSAGE.INVALID_PARAMETERS,
+				API_ERRORS_METHODS.BadRequest
+			);
+
+			const createdPosts = await new UserController().getUserPosts(
+				"createdPosts",
+				req
+			);
+
+			res.send(createdPosts);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default new UserController();
