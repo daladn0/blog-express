@@ -6,11 +6,7 @@ import { validateResults } from "../helpers/ValidateRequest.js";
 class PostController {
 	async getOne(req, res, next) {
 		try {
-			validateResults(
-				req,
-				MESSAGE.INVALID_PARAMETERS,
-				API_ERRORS_METHODS.BadRequest
-			);
+			validateResults(req, "Post doesn't exist", API_ERRORS_METHODS.BadRequest);
 
 			const { id } = req.params;
 

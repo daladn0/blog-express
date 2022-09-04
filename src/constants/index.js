@@ -64,4 +64,6 @@ export const MESSAGE = {
 	CATEGORY_NOT_FOUND: "Category not found",
 
 	POST_NOT_FOUND: `Post not found`,
+
+	USER_REGISTERED: "User is signed up",
 };

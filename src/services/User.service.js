@@ -43,7 +43,10 @@ class UserService {
 
 		const userModelDto = new UserModelDTO(createdUser);
 
-		return userModelDto;
+		return {
+			user: userModelDto,
+			message: MESSAGE.USER_REGISTERED,
+		};
 	}
 
 	async login(email, password) {
@@ -86,7 +89,7 @@ class UserService {
 
 		if (!decodedData) throw ApiError.Unauthorized();
 
-		const user = await UserModel.findById(decodedData.id);
+		const user = await UserModel.findOne({ refreshToken });
 
 		if (!user) throw ApiError.Unauthorized();
 
